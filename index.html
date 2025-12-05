@@ -8,7 +8,6 @@
     <style>
         :root {
             --bg: #f5f5f7;
-            --card-bg: #ffffff;
             --text: #111111;
             --muted: #7a7a80;
             --border: #e2e2e7;
@@ -16,6 +15,10 @@
 
         * {
             box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         html, body {
@@ -30,7 +33,7 @@
 
         body {
             position: relative;
-            overflow: hidden;
+            overflow-x: hidden;
         }
 
         /* canvas s tečkami v pozadí */
@@ -43,61 +46,45 @@
             z-index: 0;
         }
 
-        .page-wrapper {
+        .layer {
             position: relative;
+            z-index: 1;
+        }
+
+        /* Všechny sekce jako celé stránky */
+        section {
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 24px;
-            z-index: 1;
+            padding: 40px 24px;
         }
 
-        .page {
+        .section-inner {
+            max-width: 720px;
             width: 100%;
-            max-width: 760px;
-            padding: 40px 32px 36px;
-            background: var(--card-bg);
-            border-radius: 22px;
-            box-shadow: 0 18px 45px rgba(0, 0, 0, 0.06);
             text-align: center;
-            border: 1px solid rgba(0, 0, 0, 0.03);
-
-            opacity: 0;
-            transform: translateY(10px);
-            animation: fadeIn 0.45s ease-out forwards;
         }
 
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        /* HERO (logo + slogan + menu) */
+        .hero {
+            flex-direction: column;
         }
 
-        header {
-            margin-bottom: 24px;
-        }
-
-        .logo-img {
-            width: 140px;
+        .hero-logo {
+            width: 150px;
             max-width: 55vw;
             height: auto;
             display: block;
-            margin: 0 auto 10px;
+            margin: 0 auto 16px;
         }
 
-        .tagline {
-            margin-top: 0;
-            font-size: 13px;
-            color: var(--muted);
-            text-transform: lowercase;
+        .hero-tagline {
+            margin: 0 0 32px;
+            font-size: 14px;
             letter-spacing: 0.08em;
-        }
-
-        /* MENU */
-        nav {
-            margin-bottom: 24px;
+            text-transform: lowercase;
+            color: var(--muted);
         }
 
         nav ul {
@@ -105,14 +92,14 @@
             padding: 0;
             margin: 0;
             display: inline-flex;
-            gap: 36px;
+            gap: 40px;
             flex-wrap: wrap;
         }
 
         nav a {
             text-decoration: none;
             color: var(--text);
-            font-size: 13px;
+            font-size: 14px;
             letter-spacing: 0.12em;
             text-transform: uppercase;
             padding-bottom: 3px;
@@ -125,60 +112,49 @@
             opacity: 0.7;
         }
 
-        main {
-            margin-top: 8px;
-        }
-
-        section {
-            padding: 20px 0;
-            border-top: 1px solid var(--border);
-        }
-
-        section:first-of-type {
-            border-top: none;
-        }
-
+        /* Nadpisy a texty v sekcích */
         .section-label {
             font-size: 11px;
             letter-spacing: 0.16em;
             text-transform: uppercase;
             color: var(--muted);
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
 
         .section-title {
-            font-size: 16px;
+            font-size: 18px;
             letter-spacing: 0.14em;
             text-transform: uppercase;
-            margin: 0 0 8px;
+            margin: 0 0 14px;
         }
 
         .about-text {
-            font-size: 14px;
-            line-height: 1.6;
-            max-width: 520px;
+            font-size: 15px;
+            line-height: 1.7;
+            max-width: 540px;
             margin: 0 auto;
         }
 
-        /* ECOSYSTEM / PROJECTS */
+        /* Ecosystem / Projects */
         .ecosystem-label {
             font-size: 12px;
             letter-spacing: 0.18em;
             text-transform: uppercase;
-            margin-bottom: 18px;
+            margin-bottom: 22px;
+            color: var(--muted);
         }
 
         .projects-circle-row {
             display: flex;
             justify-content: center;
-            gap: 26px;
+            gap: 32px;
             flex-wrap: wrap;
-            margin-top: 4px;
+            margin-top: 8px;
         }
 
         .project-pill {
-            width: 130px;
-            height: 130px;
+            width: 140px;
+            height: 140px;
             border-radius: 50%;
             border: 1px solid var(--border);
             display: flex;
@@ -189,12 +165,14 @@
             letter-spacing: 0.12em;
             text-transform: uppercase;
             line-height: 1.4;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(4px);
         }
 
-        /* CONTACT */
+        /* Contact */
         .contact-block {
-            font-size: 14px;
-            line-height: 1.7;
+            font-size: 15px;
+            line-height: 1.8;
         }
 
         .contact-block a {
@@ -207,20 +185,59 @@
             border-bottom-color: transparent;
         }
 
-        footer {
+        .contact-footer {
             margin-top: 18px;
             font-size: 11px;
             color: var(--muted);
         }
 
+        /* Jemné fade-in při načtení */
+        .hero .section-inner,
+        .about .section-inner,
+        .ecosystem .section-inner,
+        .contact .section-inner {
+            opacity: 0;
+            transform: translateY(8px);
+            animation: fadeIn 0.45s ease-out forwards;
+        }
+
+        .about .section-inner { animation-delay: 0.1s; }
+        .ecosystem .section-inner { animation-delay: 0.2s; }
+        .contact .section-inner { animation-delay: 0.3s; }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Mobilní úpravy */
         @media (max-width: 640px) {
-            .page {
-                padding: 32px 18px 28px;
-                border-radius: 18px;
+            section {
+                padding: 32px 16px;
             }
+
+            .hero-logo {
+                width: 120px;
+            }
+
             nav ul {
-                gap: 22px;
+                gap: 24px;
             }
+
+            nav a {
+                font-size: 12px;
+            }
+
+            .section-title {
+                font-size: 16px;
+            }
+
+            .about-text {
+                font-size: 14px;
+            }
+
             .project-pill {
                 width: 120px;
                 height: 120px;
@@ -233,67 +250,70 @@
 
 <canvas id="bg-particles"></canvas>
 
-<div class="page-wrapper">
-    <div class="page">
-        <header>
-            <!-- logo soubor pojmenuj glyth_logo.png a nech ho ve stejné složce -->
-            <img src="glyth_logo.png" alt="GLYTH logo" class="logo-img" />
-            <p class="tagline">endless curiosity</p>
-        </header>
+<div class="layer">
+    <!-- 1) HERO: logo + slogan + menu -->
+    <section class="hero" id="top">
+        <div class="section-inner">
+            <img src="glyth_logo.png" alt="GLYTH logo" class="hero-logo" />
+            <p class="hero-tagline">endless curiosity</p>
 
-        <nav>
-            <ul>
-                <li><a href="#about">About</a></li>
-                <li><a href="#ecosystem">Projects</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </nav>
+            <nav>
+                <ul>
+                    <li><a href="#about">About</a></li>
+                    <li><a href="#ecosystem">Projects</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </section>
 
-        <main>
-            <!-- ABOUT -->
-            <section id="about">
-                <div class="section-title">ABOUT</div>
-                <p class="about-text">
-                    GLYTH is a small independent studio exploring how digital tools, stories
-                    and interfaces can make everyday life a bit more playful, focused and
-                    humane. I design and build compact web experiments, products and
-                    artifacts that live somewhere between creative web, new internet
-                    architectures and publishing.
-                </p>
-            </section>
+    <!-- 2) ABOUT -->
+    <section class="about" id="about">
+        <div class="section-inner">
+            <div class="section-title">ABOUT</div>
+            <p class="about-text">
+                GLYTH is a small independent studio exploring how digital tools, stories
+                and interfaces can make everyday life a bit more playful, focused and
+                humane. I design and build compact web experiments, products and artifacts
+                that live somewhere between creative web, new internet architectures
+                and publishing.
+            </p>
+        </div>
+    </section>
 
-            <!-- ECOSYSTEM -->
-            <section id="ecosystem">
-                <div class="ecosystem-label">ECOSYSTEM</div>
+    <!-- 3) ECOSYSTEM -->
+    <section class="ecosystem" id="ecosystem">
+        <div class="section-inner">
+            <div class="ecosystem-label">ECOSYSTEM</div>
 
-                <div class="projects-circle-row">
-                    <div class="project-pill">
-                        CREATIVE<br />WEB
-                    </div>
-                    <div class="project-pill">
-                        WEB3.0<br />UNIVERSE
-                    </div>
-                    <div class="project-pill">
-                        GLYTH<br />BOOKS&amp;STUFF
-                    </div>
+            <div class="projects-circle-row">
+                <div class="project-pill">
+                    CREATIVE<br />WEB
                 </div>
-            </section>
-
-            <!-- CONTACT -->
-            <section id="contact">
-                <div class="section-title">CONTACT</div>
-                <div class="contact-block">
-                    Martin Svacha<br />
-                    <a href="mailto:glyth.cze@gmail.com">glyth.cze@gmail.com</a><br />
-                    +420&nbsp;732&nbsp;174&nbsp;125
+                <div class="project-pill">
+                    WEB3.0<br />UNIVERSE
                 </div>
-            </section>
-        </main>
+                <div class="project-pill">
+                    GLYTH<br />BOOKS&amp;STUFF
+                </div>
+            </div>
+        </div>
+    </section>
 
-        <footer>
-            © GLYTH
-        </footer>
-    </div>
+    <!-- 4) CONTACT -->
+    <section class="contact" id="contact">
+        <div class="section-inner">
+            <div class="section-title">CONTACT</div>
+            <div class="contact-block">
+                Martin Svacha<br />
+                <a href="mailto:glyth.cze@gmail.com">glyth.cze@gmail.com</a><br />
+                +420&nbsp;732&nbsp;174&nbsp;125
+            </div>
+            <div class="contact-footer">
+                © GLYTH
+            </div>
+        </div>
+    </section>
 </div>
 
 <script>
@@ -333,7 +353,7 @@
             p.x += p.vx;
             p.y += p.vy;
 
-            // jemné "wrapnutí" přes okraje
+            // wrap okolo okrajů
             if (p.x < 0) p.x = canvas.width;
             if (p.x > canvas.width) p.x = 0;
             if (p.y < 0) p.y = canvas.height;
